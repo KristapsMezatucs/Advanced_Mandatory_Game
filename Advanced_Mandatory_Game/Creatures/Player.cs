@@ -15,7 +15,6 @@ namespace Advanced_Mandatory_Game.Creatures
         private int _health = 100;
         private int _baseDamage = 10;
         private int _equipmentSlots = 2;
-        //private Player _p;
         //private Item[] _inventorySpace = new Item[5];
         private string _icon;
 
@@ -41,7 +40,7 @@ namespace Advanced_Mandatory_Game.Creatures
 
         public int Health { get { return _health; } set { _health = value; } }
 
-        //The space player has in the inventory | Failed to successfuly implement
+        //The space player has in the inventory | Failed to implement
         //public Item[] InventorySpace { get { return _inventorySpace; } set { _inventorySpace = value; } }
 
         public int EquipmentSlots { get { return _equipmentSlots; } set { _equipmentSlots = value; } }
@@ -76,8 +75,17 @@ namespace Advanced_Mandatory_Game.Creatures
         public int ReceiveHit(Creature c)
         {
             Player p = new Player();
-            int reducedHealth = p.Health - c.Hit(this);
-            p.Health = reducedHealth;
+            if (defenceItems != null)
+            {
+                var lessDmg = c.Damage - defenceItems.Sum(DefenceItem => DefenceItem.DamageReduction);
+                var remainingHealth = p.Health - lessDmg;
+                p.Health = remainingHealth;
+            }
+            else
+            {
+                int attacked = p.Health - c.Hit(this);
+                p.Health = attacked;
+            }
             return p.Health;
 
         }
@@ -102,7 +110,7 @@ namespace Advanced_Mandatory_Game.Creatures
         {
             if (Health is <= 0)
             {
-                Logger.ts.TraceEvent(TraceEventType.Information,0, "You have died. Next time try not to suck so much");
+                Logger.ts.TraceEvent(TraceEventType.Information, 0, "You have died. Next time try not to suck so much");
                 Logger.ts.Flush();
             }
             return Health is <= 0;

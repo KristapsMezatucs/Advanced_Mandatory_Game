@@ -18,8 +18,7 @@ namespace Advanced_Mandatory_Game.Creatures
         private int _baseDamage = 10;
         private string _icon;
         private int _health = 100;
-        //private Creature _c;
-
+        
         public Creature()
         {
 
@@ -69,8 +68,17 @@ namespace Advanced_Mandatory_Game.Creatures
         public virtual int ReceiveHit(Player p)
         {
             Creature c = new Creature();
-            int attacked = c.Health - p.Hit(this);
-            c.Health = attacked;
+            if (defenceItems != null)
+            {
+                var lessDmg = p.Damage - defenceItems.Sum(DefenceItem => DefenceItem.DamageReduction);
+                var remainingHealth = c.Health - lessDmg;
+                c.Health = remainingHealth;
+            }
+            else
+            {
+                int attacked = c.Health - p.Hit(this);
+                c.Health = attacked;
+            }           
             return c.Health;
         }
 
